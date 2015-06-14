@@ -9,20 +9,25 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
+
+import socket.SMSocket;
 import layers.GameCompanion;
 import layers.GraphicsPanel;
 
 
 public class RootPanel extends JPanel implements Runnable, KeyListener{
 	
-	JFrame frame;
+	GameFrame frame;
 	JLayeredPane layeredPane;
-	GraphicsPanel graphicsPanel;
+	SMSocket socket;
 	
+	Passport _p;
+	GraphicsPanel graphicsPanel;
 	GameCompanion gc;
 	
 	private Thread thread;
@@ -31,12 +36,16 @@ public class RootPanel extends JPanel implements Runnable, KeyListener{
 	private int screenW;
 	private int screenH;
 	
-	public RootPanel(JFrame frame){
+	
+	/* GameFrame -> RootPanel*/
+	public RootPanel(GameFrame frame , Passport p, SMSocket socket){
 		super();
 		this.frame = frame;
-		
+		this.socket = socket;
 		setWidth(700);
 		setHeight(500);
+		
+		_p = p;
 
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         setLayout(new BorderLayout());
@@ -48,7 +57,7 @@ public class RootPanel extends JPanel implements Runnable, KeyListener{
 		layeredPane = new JLayeredPane();
 		layeredPane.setPreferredSize(new Dimension(screenW,400));
 		
-		gc = new GameCompanion();
+		gc = new GameCompanion(_p);
 
 		add(layeredPane, BorderLayout.CENTER);
 		add(gc,BorderLayout.PAGE_END);
@@ -66,8 +75,9 @@ public class RootPanel extends JPanel implements Runnable, KeyListener{
 	public void run(){
 		init();
 	}
+
 	private void init(){
-		graphicsPanel = new GraphicsPanel(frame, this);
+		graphicsPanel = new GraphicsPanel(frame, this,_p,socket);
 		layeredPane.add(graphicsPanel, new Integer(0));
 	}
 	public int getHeight(){

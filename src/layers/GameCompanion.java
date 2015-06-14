@@ -15,8 +15,12 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import core.Passport;
 import net.miginfocom.swing.MigLayout;
 
+
+
+/* Holds GUI information for a game instance */
 public class GameCompanion extends JPanel implements ChangeListener{
 	
 	private JButton send;
@@ -31,7 +35,7 @@ public class GameCompanion extends JPanel implements ChangeListener{
 	private JSlider raiseAmount;
 	private JTextField raiseInput;
 	
-	public GameCompanion(){
+	public GameCompanion(Passport _p){
 		super();
 		setLayout(new GridLayout(0,2));
 	    

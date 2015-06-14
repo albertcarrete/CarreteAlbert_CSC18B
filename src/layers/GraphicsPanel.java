@@ -7,9 +7,13 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
+import socket.SMSocket;
 import appstate.AppStateManager;
+import core.Passport;
 import core.RootPanel;
 
 public class GraphicsPanel extends JPanel implements Runnable{
@@ -20,6 +24,8 @@ public class GraphicsPanel extends JPanel implements Runnable{
 	/* Core */
 	Thread thread;
 	RootPanel root;
+	Passport _p;
+	SMSocket socket;
 	
 	/* Dimensions of Root Panel */
 	private int width;
@@ -37,10 +43,14 @@ public class GraphicsPanel extends JPanel implements Runnable{
 	
 	private JPanel menu;
 	
-	public GraphicsPanel(JFrame parent,RootPanel root){
+	public GraphicsPanel(JFrame parent,RootPanel root, Passport p, SMSocket socket){
 		super();
 		
 		this.root = root;
+		this.socket = socket;
+		_p = p;
+		
+		System.out.println("GraphicsPanel reporting " + _p.getgameID() + _p.getUsername());
 		setWidth(root.getWidth());
 		setHeight(root.getHeight()-100);
 		
@@ -50,7 +60,7 @@ public class GraphicsPanel extends JPanel implements Runnable{
 		setFocusable(false);
 //		setBorder(BorderFactory.createLineBorder(Color.BLUE));
 		setBounds(0,0,width,height);
-		asm = new AppStateManager(this);
+		asm = new AppStateManager(this,_p,socket);
 		
 		/* Drawing ===================================================
 		 * The main board for the graphics information. The width and
@@ -136,6 +146,7 @@ public class GraphicsPanel extends JPanel implements Runnable{
 		}
 		
 	}
+
 	public int getHeight(){
 		return height;
 	}

@@ -35,7 +35,9 @@ public class Javada {
 		final SplashScreen splash = SplashScreen.getSplashScreen();
 		if(splash == null){
             System.out.println("SplashScreen.getSplashScreen() returned null");
+            
             return;
+            
 		}
 		Graphics2D g = splash.createGraphics();
 		if(g == null){

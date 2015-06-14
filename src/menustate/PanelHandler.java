@@ -11,6 +11,8 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import core.Passport;
+
 public class PanelHandler extends JPanel{
 	
 	private Thread thread;
@@ -22,14 +24,17 @@ public class PanelHandler extends JPanel{
 	JPanel main;
 	JPanel cards;
 	
-	final static String BUTTONPANEL = "Card with JButtons";
+	final static String LOBBYPANEL = "LobbyPanel";
 	final static String TEXTPANEL = "Card with JTextField";
 	final static String CREATEPANEL = "Card with create panel";
 	final static String SETTINGSPANEL = "Card with settings panel";
 	final static String ABOUTPANEL = "Card with about panel";
 
+	
+    LobbyState lobbyState;
 
-	public PanelHandler(){
+
+	public PanelHandler(Passport _p){
 		super();
 		
 		setWidth(600);
@@ -60,18 +65,15 @@ public class PanelHandler extends JPanel{
 		
 		JPanel card1 = new JPanel();
 	    card1.setLayout(new BorderLayout());
-	    LobbyState lobbyState = new LobbyState(main);
+	    lobbyState = new LobbyState(main,_p);
 	    card1.add(lobbyState);
-//	    card1.add(new JButton("Button 1"));
-//	    card1.add(new JButton("Button 2"));
-//	    card1.add(new JButton("Button 3"));
 	    
 	    ProfileState profileState = new ProfileState();
 	    JPanel card2 = new JPanel();
 	    card2.setLayout(new BorderLayout());
 	    card2.add(profileState);
 	    
-	    CreateState createState = new CreateState();
+	    CreateState createState = new CreateState(this,_p);
 	    JPanel card3 = new JPanel();
 	    card3.setLayout(new BorderLayout());
 	    card3.add(createState);
@@ -88,7 +90,7 @@ public class PanelHandler extends JPanel{
 	    
 	    
 		cards = new JPanel(new CardLayout());
-		cards.add(card1,BUTTONPANEL);
+		cards.add(card1,LOBBYPANEL);
 		cards.add(card2,TEXTPANEL);
 		cards.add(card3,CREATEPANEL);
 		cards.add(card4,SETTINGSPANEL);
@@ -106,7 +108,8 @@ public class PanelHandler extends JPanel{
 		lobbiesButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent event){
 				CardLayout cl = (CardLayout)(cards.getLayout());
-		        cl.show(cards,BUTTONPANEL);
+		        cl.show(cards,LOBBYPANEL);
+		        lobbyState.init();
 			}
 		});
 		profileButton.addActionListener(new ActionListener(){
@@ -142,6 +145,10 @@ public class PanelHandler extends JPanel{
 		
 	}
 	
+	public void setCard(String panel){
+		CardLayout cl = (CardLayout)(cards.getLayout());
+        cl.show(cards,panel);
+	}
 	public int getHeight(){
 		return screenH;
 	}

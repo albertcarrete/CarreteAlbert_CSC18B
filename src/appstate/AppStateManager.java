@@ -3,6 +3,8 @@ package appstate;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 
+import socket.SMSocket;
+import core.Passport;
 import layers.GraphicsPanel;
 
 public class AppStateManager {
@@ -10,20 +12,24 @@ public class AppStateManager {
 	private ArrayList<AppState> appStates;
 	private int currentState;
 	private GraphicsPanel graphicsPanel;
-	
+	Passport _p;
+	SMSocket socket;
 	public static final int LOGINSTATE = 0;
 	public static final int MAINMENUSTATE = 1;
-	public static final int LOBBYSTATE = 2;
+	public static final int GAMESTATE = 2;
 	public static final int SETTINGSSTATE = 3;
-	public static final int GAMESTATE = 4;
+	public static final int TESTSTATE = 4;
 	
-	public AppStateManager(GraphicsPanel graphicsPanel){
+	public AppStateManager(GraphicsPanel graphicsPanel, Passport p, SMSocket socket){
 		
 		appStates = new ArrayList<AppState>();
-		currentState = LOGINSTATE;
+		currentState = GAMESTATE;
 		this.graphicsPanel = graphicsPanel;
+		this.socket = socket;
+		_p = p;
 		appStates.add(new LoginState(this,this.graphicsPanel));
 		appStates.add(new MainMenuState(this,this.graphicsPanel));
+		appStates.add(new GameState(this,this.graphicsPanel,_p,socket));
 
 	}
 	public void setState(int state){

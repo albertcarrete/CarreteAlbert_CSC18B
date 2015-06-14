@@ -35,6 +35,7 @@ public class RootMenu extends JPanel implements Runnable,KeyListener{
 	JFrame frame;
 	private Thread thread;
 	
+	Passport _p;
 	// screen size
 	private int screenW;
 	private int screenH;
@@ -51,9 +52,12 @@ public class RootMenu extends JPanel implements Runnable,KeyListener{
 	final static String SETTINGSPANEL = "Card with settings panel";
 	final static String ABOUTPANEL = "Card with about panel";
 
+	/* Javada JFrame -> RootMenu */
 	public RootMenu(JFrame frame){
 		super();
 		this.frame = frame;
+		
+		_p = new Passport();
 		
 		setWidth(600);
 		setHeight(300);
@@ -63,8 +67,8 @@ public class RootMenu extends JPanel implements Runnable,KeyListener{
 		setFocusable(true);
 		requestFocus();
 		
-		signInState = new SignInState(this);
-		panelHandler = new PanelHandler();
+		signInState = new SignInState(this,_p);
+		panelHandler = new PanelHandler(_p);
 		
 		add(signInState);
 
@@ -99,7 +103,6 @@ public class RootMenu extends JPanel implements Runnable,KeyListener{
 	
 	public void grantAccess(){
 		add(panelHandler);
-
 	}
 	
 	// Required by KeyListener
