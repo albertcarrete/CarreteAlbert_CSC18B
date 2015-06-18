@@ -10,6 +10,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Iterator;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -125,7 +127,8 @@ private void sendGet() throws Exception{
 		con.setRequestMethod("GET");
 		// add request header
 		con.setRequestProperty("User-Agent",USER_AGENT);
-		
+//		con.setRequestProperty("Content-Type","application/json");
+
 		int responseCode = con.getResponseCode();
 		System.out.println("\nSending 'GET' request to URL : " + url);
 		System.out.println("Response Code : " + responseCode);
@@ -140,41 +143,80 @@ private void sendGet() throws Exception{
 		in.close();
 		
 		
-		JSONArray prelimObject = new JSONArray(response.toString());
-		JSONObject testObject = prelimObject.getJSONObject(0);
+		System.out.println(response);
+
 		
-		if(!testObject.has("success")){
-			System.out.println(response.toString());
-			String _id = "";
-				// Convert response from server to JSONArray (USING json.org.simple)
-				
-				boolean empty = true;
-				
-				JSONArray json = new JSONArray(response.toString());
-				int length = json.length();
-				results = new String[length][4];
-				
-				for(int i = 0; i < json.length(); i++){
-					
-					JSONObject responseObject = json.getJSONObject(i);
-					String title 		= responseObject.getString("title");
-					String numPlayers 	= responseObject.getString("numPlayers");
-					String type 		= responseObject.getString("type");
-					String id			= responseObject.getString("_id");
-					
-					results[i][0] = title;
-					results[i][1] = numPlayers;
-					results[i][2] = type;
-					results[i][3] = id;
-					
-				}
-				
-		        lobbyModel = new LobbyModel(results);
-		        table.setModel(lobbyModel);
-		        table.repaint();			
-		}else{
-			System.out.println("No lobbies available to view");
+		JSONObject lobbies = new JSONObject(response.toString());
+		Iterator<?> lobbyKeys = lobbies.keys();
+		int x = 0;
+		results = new String[lobbies.length()][4];
+
+		while(lobbyKeys.hasNext()){
+			
+			String key = (String)lobbyKeys.next();
+			System.out.println(key);
+			
+
+			JSONObject responseObject = lobbies.getJSONObject(key);
+			
+			System.out.println(responseObject);
+									
+			String title 		= responseObject.getString("title");
+			String numPlayers 	= responseObject.getString("numPlayers");
+			String type 		= responseObject.getString("type");
+			String id			= key;
+			
+			results[x][0] = title;
+			results[x][1] = numPlayers;
+			results[x][2] = type;
+			results[x][3] = id;
+			
+			x++;
 		}
+		
+        lobbyModel = new LobbyModel(results);
+        table.setModel(lobbyModel);
+        table.repaint();	
+		
+		
+		
+
+//		System.out.println(response);
+//		JSONArray prelimObject = new JSONArray(response.toString());
+//		JSONObject testObject = prelimObject.getJSONObject(0);
+//		
+//		if(!testObject.has("success")){
+//			System.out.println(response.toString());
+//			String _id = "";
+//				// Convert response from server to JSONArray (USING json.org.simple)
+//				
+//				boolean empty = true;
+//				
+//				JSONArray json = new JSONArray(response.toString());
+//				int length = json.length();
+//				results = new String[length][4];
+//				
+//				for(int i = 0; i < json.length(); i++){
+//					
+//					JSONObject responseObject = json.getJSONObject(i);
+//					String title 		= responseObject.getString("title");
+//					String numPlayers 	= responseObject.getString("numPlayers");
+//					String type 		= responseObject.getString("type");
+//					String id			= responseObject.getString("_id");
+//					
+//					results[i][0] = title;
+//					results[i][1] = numPlayers;
+//					results[i][2] = type;
+//					results[i][3] = id;
+//					
+//				}
+//				
+//		        lobbyModel = new LobbyModel(results);
+//		        table.setModel(lobbyModel);
+//		        table.repaint();			
+//		}else{
+//			System.out.println("No lobbies available to view");
+//		}
 		
 
 	}	

@@ -9,10 +9,13 @@ import java.net.URISyntaxException;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 //import org.json.*;
 //import org.json.simple.*;
 //import org.json.simple.parser.JSONParser;
 import java.util.Iterator;
+
+import layers.GameCompanion;
 //import appstate.AppState;
 import appstate.GameState;
 import core.Passport;
@@ -35,6 +38,8 @@ public class SMSocket {
 //	DateTime dateTime;
 	Passport _p;
 	private String controllerName;
+	
+	GameCompanion gc;
 	
 	public SMSocket(Passport passport) throws URISyntaxException{
 		
@@ -111,7 +116,23 @@ public class SMSocket {
       			
       		}
       		
-      	}).on("private:message", new Emitter.Listener(){
+      	}).on("room:syncMessage", new Emitter.Listener() {
+
+        	  @Override
+        	  public void call(Object... args) {   
+        		  
+        		  try{
+            		  JSONObject responseObject = new JSONObject(args[0].toString());
+            		  String message = (String)responseObject.get("message");
+            		  gc.updateMessage(message);
+            		  
+        		  }catch(Exception e){
+        			  e.printStackTrace();
+        		  }
+        		  
+        	  }
+
+       }).on("private:message", new Emitter.Listener(){
       		
       		@Override
       		public void call(Object... args){
@@ -146,12 +167,30 @@ public class SMSocket {
       		  
       	  }
 
-      	}).on("sync:start", new Emitter.Listener() {
+      	}).on("sync:polling", new Emitter.Listener() {
 
         	  @Override
         	  public void call(Object... args) {   
         		  
-//        		 css.startGame();
+        		  try{
+        			  System.out.println(args[0]);
+              		  JSONObject responseObject = new JSONObject(args[0].toString());
+              		  String title 			= (String)responseObject.get("title");
+              		  String description 	= (String)responseObject.get("description");
+              		  JSONArray players 	= responseObject.getJSONArray("players");
+          			  game.updateGame(players);	  
+              		  
+//              		  int playerSize = players.length();
+//              		  for(int i = 0; i < playerSize; i++){
+//              			  JSONObject player = players.getJSONObject(i);
+//              		  }
+//              		  int position = (int)responseObject.get("position");  
+//              		  boolean ready = (boolean)responseObject.get("ready");
+              		  
+          		  }catch(Exception e){
+          			  e.printStackTrace();
+          		  }
+        		  
         		  
         	  }
 
@@ -499,6 +538,33 @@ public class SMSocket {
 	}
 	public void updateFrameMessages(String message){
 //		frame.updateMessages(message);
+	}
+	public void sendMessageToRoom(String gameID, String username, String message){
+		
+		 JSONObject obj = new JSONObject();
+	      try{
+	    	obj.put("username", username);
+	    	obj.put("gameID", gameID);
+	      	obj.put("message", message);
+	      }catch(Exception e){
+	      	e.printStackTrace();
+	      }
+	      socket.emit("room:message",obj);
+	      
+	}
+	public void findSeat(String gameID, String username){
+		 JSONObject obj = new JSONObject();
+	      try{
+	    	obj.put("username", username);
+	    	obj.put("gameID", gameID);
+	      }catch(Exception e){
+	      	e.printStackTrace();
+	      }
+	      socket.emit("room:findSeat",obj);
+	      
+	}
+	public void linkGameCompanion(GameCompanion gc){
+		this.gc = gc;
 	}
 	public void disconnect(String username, String gameID){
 		 JSONObject obj = new JSONObject();

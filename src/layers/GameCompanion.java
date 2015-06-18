@@ -15,6 +15,7 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import socket.SMSocket;
 import core.Passport;
 import net.miginfocom.swing.MigLayout;
 
@@ -22,6 +23,8 @@ import net.miginfocom.swing.MigLayout;
 
 /* Holds GUI information for a game instance */
 public class GameCompanion extends JPanel implements ChangeListener{
+	Passport _p;
+	final SMSocket socket;
 	
 	private JButton send;
 	private JTextArea messageTextArea;
@@ -35,8 +38,13 @@ public class GameCompanion extends JPanel implements ChangeListener{
 	private JSlider raiseAmount;
 	private JTextField raiseInput;
 	
-	public GameCompanion(Passport _p){
+	public GameCompanion(Passport p, SMSocket socket){
+		
 		super();
+		
+		_p=p;
+		this.socket=socket;
+		socket.linkGameCompanion(this);
 		setLayout(new GridLayout(0,2));
 	    
 		JPanel panel = new JPanel(new MigLayout());
@@ -56,8 +64,34 @@ public class GameCompanion extends JPanel implements ChangeListener{
 		
 		send.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent event){
-				messageTextArea.setText(messageTextArea.getText() + "\n" + messageTextField.getText());
-				messageTextField.setText("");
+				
+				
+				
+				if(!messageTextField.getText().equals("")){
+					
+					if(messageTextField.getText().startsWith("/")){
+						
+						String checkInput = messageTextField.getText().substring(1);
+						if(checkInput.equals("join")){
+							findSeat();
+						}
+						
+					}else{
+						sendMessageThroughSocket(messageTextField.getText());
+						messageTextField.setText("");	
+					}
+					
+				}
+				
+				
+//				String data = messageTextArea.getText().trim();
+//				if(data.equals("")){
+//					messageTextArea.setText(messageTextField.getText());
+//				}else{
+//					messageTextArea.setText(messageTextArea.getText() + "\n" + messageTextField.getText());
+//				}
+//				messageTextField.setText("");
+
 			}
 		});
 		
@@ -99,5 +133,20 @@ public class GameCompanion extends JPanel implements ChangeListener{
 	 }
 	 public void ActionPerformed(ActionEvent e){
 		 
+	 }
+	 public void sendMessageThroughSocket(String message){
+			this.socket.sendMessageToRoom(_p.getgameID(),_p.getUsername(), messageTextField.getText());			
+	 }
+	 public void updateMessage(String message){
+			String data = messageTextArea.getText().trim();
+			if(data.equals("")){
+				messageTextArea.setText(message);
+			}else{
+				messageTextArea.setText(messageTextArea.getText() + "\n" + message);
+			}
+			messageTextField.setText("");
+	 }
+	 public void findSeat(){
+		 socket.findSeat(_p.getgameID(),_p.getUsername());
 	 }
 }

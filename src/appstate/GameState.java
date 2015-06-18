@@ -15,6 +15,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import socket.SMSocket;
 import socket.SocketController;
 import core.GameFrame;
@@ -53,6 +56,7 @@ public class GameState extends AppState{
 	String gameID;
 	int margin;
 	Color tableOutline;
+	String playerNames[];
 	
 	public GameState(AppStateManager asm, GraphicsPanel graphicsPanel, Passport p, SMSocket socket){
 		
@@ -61,7 +65,14 @@ public class GameState extends AppState{
 		this.graphicsPanel = graphicsPanel;
 		_p = p;
 		this.socket = socket;
-
+		
+		playerNames = new String[9];
+		for(int i = 0; i < playerNames.length; i++ ){
+			
+			playerNames[i] = "Player " + i;
+			
+		}
+		
 		w = graphicsPanel.getWidth();
 		h = graphicsPanel.getHeight();
 		
@@ -158,15 +169,21 @@ public class GameState extends AppState{
 		
 		drawingBoard.setColor(Color.WHITE);
 	
-		drawingBoard.drawString("Player1", xGetOnEllipse(40), yGetOnEllipse(40));
-		drawingBoard.drawString("Player2", xGetOnEllipse(80), yGetOnEllipse(80));
-		drawingBoard.drawString("Player3", xGetOnEllipse(120), yGetOnEllipse(120));
-		drawingBoard.drawString("Player4", xGetOnEllipse(160), yGetOnEllipse(160));
-		drawingBoard.drawString("Player5", xGetOnEllipse(200), yGetOnEllipse(200));
-		drawingBoard.drawString("Player6", xGetOnEllipse(240), yGetOnEllipse(240));
-		drawingBoard.drawString("Player7", xGetOnEllipse(280), yGetOnEllipse(280));
-		drawingBoard.drawString("Player8", xGetOnEllipse(320), yGetOnEllipse(320));
-		drawingBoard.drawString("Player9", xGetOnEllipse(360), yGetOnEllipse(360));
+		int rotation = 0;
+		for(int i = 0; i < 9; i++){
+			drawingBoard.drawString(playerNames[i], xGetOnEllipse(rotation), yGetOnEllipse(rotation));
+			rotation += 40;
+		}
+		
+//		drawingBoard.drawString("Player1", xGetOnEllipse(40), yGetOnEllipse(40));
+//		drawingBoard.drawString("Player2", xGetOnEllipse(80), yGetOnEllipse(80));
+//		drawingBoard.drawString("Player3", xGetOnEllipse(120), yGetOnEllipse(120));
+//		drawingBoard.drawString("Player4", xGetOnEllipse(160), yGetOnEllipse(160));
+//		drawingBoard.drawString("Player5", xGetOnEllipse(200), yGetOnEllipse(200));
+//		drawingBoard.drawString("Player6", xGetOnEllipse(240), yGetOnEllipse(240));
+//		drawingBoard.drawString("Player7", xGetOnEllipse(280), yGetOnEllipse(280));
+//		drawingBoard.drawString("Player8", xGetOnEllipse(320), yGetOnEllipse(320));
+//		drawingBoard.drawString("Player9", xGetOnEllipse(360), yGetOnEllipse(360));
 
 //		drawingBoard.setColor(Color.DARK_GRAY);
 //		drawingBoard.drawRect(0, 0, 200, 200);
@@ -193,6 +210,20 @@ public class GameState extends AppState{
 		return Math.round(ePY);
 	}
 	
+	public void updateGame(JSONArray players){
+		
+		try{
+		JSONArray playersArray = players;
+		
+		int playerSize = players.length();
+		for(int i = 0; i < playerSize; i++){
+			JSONObject player = playersArray.getJSONObject(i);
+			playerNames[i] = (String)player.get("username");
+		}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
 	public void keyPressed(int k){
 		
 	}

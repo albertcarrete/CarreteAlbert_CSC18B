@@ -57,7 +57,7 @@ public class RootPanel extends JPanel implements Runnable, KeyListener{
 		layeredPane = new JLayeredPane();
 		layeredPane.setPreferredSize(new Dimension(screenW,400));
 		
-		gc = new GameCompanion(_p);
+		gc = new GameCompanion(_p,this.socket);
 
 		add(layeredPane, BorderLayout.CENTER);
 		add(gc,BorderLayout.PAGE_END);
